@@ -93,14 +93,14 @@ public class WebSocketHandlerImpl extends WebSocketHandler {
      */
     public void onHandShake(WebSocketRequest request, WebSocketResponse response) {
         if (!StrUtil.isBlank(simpleRPC.getToken())){
-            String id = StrUtil.EMPTY;
+            String token = StrUtil.EMPTY;
             try {
-                id = request.getParameters().get("id")[0];
+                token = request.getParameters().get("token")[0];
             }catch (Exception e){
-                log.error("Request id is null , from:[{}]",request.getLocalAddress().toString());
+                log.error("Request token is null , from:[{}]",request.getLocalAddress().toString());
             }
-            if (!id.equals(simpleRPC.getToken())){
-                log.error("Request id is not match , handShake stop , id:[{}],from:[{}] ",id,request.getLocalAddress().toString());
+            if (!token.equals(simpleRPC.getToken())){
+                log.error("Request token is not match , handShake stop , id:[{}],from:[{}] ",token,request.getLocalAddress().toString());
                 response.close(403,"Auth fail");
             }
         }

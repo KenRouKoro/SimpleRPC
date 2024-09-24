@@ -67,7 +67,7 @@ public class SimpleRPC {
     private boolean isInit = false;
 
     /**
-     * 标识是否优先处理二进制消息。
+     * 标识是否优先发送二进制消息。
      */
     @Getter
     @Setter

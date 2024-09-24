@@ -64,6 +64,12 @@ public class RPCRouter {
             // 如果没有找到匹配的RPC服务器实例，返回空的Optional
             return Optional.empty();
         });
+        taskCache.setCallback((key, value)->{
+            APIResponse response = APIResponse.create().UUID(key);
+            response.setStatus(408);
+            response.setMessage("Request timeout");
+            value.handle(null,null,response);
+        });
     }
 
     /**

@@ -40,6 +40,9 @@ public class TimedCache<K, V> {
     @Setter
     @Getter
     private Consumer<Map.Entry<K, V>> onExpire = null;
+    @Getter
+    @Setter
+    private CacheCallback<K,V> callback = null;
 
 
     /**
@@ -110,6 +113,9 @@ public class TimedCache<K, V> {
             long now = System.currentTimeMillis();
             for (Map.Entry<K, CacheEntry<V>> entry : cache.entrySet()) {
                 if (now - entry.getValue().timestamp > timeout) {
+                    if (callback!=null){
+                        callback.onExpire(entry.getKey(),entry.getValue().value);
+                    }
                     cache.remove(entry.getKey());
                     if (onExpire!=null) {
                         onExpire.accept(new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue().value));
@@ -148,5 +154,8 @@ public class TimedCache<K, V> {
             this.value = value;
             this.timestamp = timestamp;
         }
+    }
+    public interface CacheCallback<T,V>{
+        void onExpire(T key,V value);
     }
 }
