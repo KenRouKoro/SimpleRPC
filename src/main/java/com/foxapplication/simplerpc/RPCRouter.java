@@ -87,7 +87,7 @@ public class RPCRouter {
         try {
             apiResponse = APIResponse.fromStr(data);
         } catch (JsonProcessingException e) {
-            log.error("解析数据失败",e);
+            log.error("Data conversion failed.",e);
             return;
         }
         handle(request,response,apiResponse);
@@ -99,12 +99,12 @@ public class RPCRouter {
      * @param response WebSocket响应对象
      * @param data 二进制形式的API响应数据
      */
-    public void handleHex(WebSocketRequest request, WebSocketResponse response, byte[] data){
+    public void handleBin(WebSocketRequest request, WebSocketResponse response, byte[] data){
         APIResponse apiResponse;
         try {
-            apiResponse = APIResponse.fromHex(data);
+            apiResponse = APIResponse.fromBin(data);
         } catch (Exception e) {
-            log.error("解析数据失败",e);
+            log.error("Data conversion failed.",e);
             return;
         }
         handle(request,response,apiResponse);
@@ -131,7 +131,7 @@ public class RPCRouter {
             }
         }
         if (cacheNode == null){
-            response.sendTextMessage(APIResponse.error404("未找到匹配的API").UUID(data.getUUID()).toString());
+            response.sendTextMessage(APIResponse.error404("No matching APIs found").UUID(data.getUUID()).toString());
             return;
         }
         executeCallback(request, response, data, cacheNode);
@@ -153,9 +153,9 @@ public class RPCRouter {
                     response.sendTextMessage(apiResponse.toString());
                 } else {
                     try {
-                        response.sendBinaryMessage(apiResponse.toHex());
+                        response.sendBinaryMessage(apiResponse.toBin());
                     } catch (JsonProcessingException e) {
-                        log.error("转换数据失败", e);
+                        log.error("Failed to convert data", e);
                     }
                 }
             });
@@ -170,7 +170,7 @@ public class RPCRouter {
      */
     public void addRouterNode(String key, RPCServer rpcServer) {
         if (StrUtil.isBlank(key)) {
-            log.error("不允许覆盖根节点");
+            log.error("It is not allowed to override the root node");
             return;
         }
         List<String> link = SplitUtil.split(key, ".", true, false);
@@ -203,9 +203,9 @@ public class RPCRouter {
         addSandCallBack(data.getUUID(), rpcServer);
         if (isBinary) {
             try {
-                response.sendBinaryMessage(data.toHex());
+                response.sendBinaryMessage(data.toBin());
             } catch (JsonProcessingException e) {
-                log.error("转换数据失败", e);
+                log.error("Data conversion failed.", e);
                 taskCache.remove(data.getUUID());
             }
         } else {

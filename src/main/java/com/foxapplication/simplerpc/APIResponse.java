@@ -85,7 +85,7 @@ public class APIResponse {
      *
      * @return 字节数组，表示对象的十六进制字符串形式
      */
-    public byte[] toStringHex(){
+    public byte[] toHex(){
         return toString().getBytes();
     }
     /**
@@ -94,7 +94,7 @@ public class APIResponse {
      * @return 字节数组表示的当前对象的BSON编码
      * @throws JsonProcessingException 如果对象无法被序列化为BSON格式，则抛出此异常
      */
-    public byte[] toHex() throws JsonProcessingException {
+    public byte[] toBin() throws JsonProcessingException {
         return bsonSerializer.writeValueAsBytes(this);
     }
     /**
@@ -261,13 +261,13 @@ public class APIResponse {
     }
 
     /**
-     * 将十六进制编码的BSON字节数组转换为APIResponse对象
+     * 将二进制编码的BSON字节数组转换为APIResponse对象
      *
-     * @param bson 十六进制编码的BSON字节数组
+     * @param bson 二进制编码的BSON字节数组
      * @return 转换后的APIResponse对象
      * @throws IOException 如果无法读取或反序列化指定的字节数组，则抛出此异常
      */
-    public static APIResponse fromHex(byte[] bson) throws IOException {
+    public static APIResponse fromBin(byte[] bson) throws IOException {
         return bsonSerializer.readValue(bson, APIResponse.class);
     }
 }

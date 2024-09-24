@@ -8,9 +8,6 @@ import org.dromara.hutool.core.text.StrUtil;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 表示RPC路由结构中的一个节点。
- */
 @Getter // 自动生成所有字段的getter方法
 @AllArgsConstructor // 自动生成包含所有字段的构造函数
 @NoArgsConstructor // 自动生成无参构造函数

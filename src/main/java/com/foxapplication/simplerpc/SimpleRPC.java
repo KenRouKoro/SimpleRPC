@@ -103,14 +103,14 @@ public class SimpleRPC {
 
             @Override
             public void handleBinaryMessage(WebSocketRequest request, WebSocketResponse response, byte[] data) {
-                rpcRouter.handleHex(request, response, data);
+                rpcRouter.handleBin(request, response, data);
             }
         });
         httpHandle.route("/", new HttpServerHandler() {
             @Override
             public void handle(HttpRequest request, HttpResponse response) throws IOException {
                 HttpResponseUtil.addJsonResponseHeader(response);
-                response.write(APIResponse.success("SimpleRPC").toStringHex());
+                response.write(APIResponse.success("SimpleRPC").toHex());
             }
         });
 
