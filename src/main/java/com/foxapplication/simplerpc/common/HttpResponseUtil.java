@@ -1,4 +1,4 @@
-package com.foxapplication.simplerpc;
+package com.foxapplication.simplerpc.common;
 
 import org.smartboot.http.server.HttpResponse;
 

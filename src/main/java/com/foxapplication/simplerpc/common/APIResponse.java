@@ -1,4 +1,4 @@
-package com.foxapplication.simplerpc;
+package com.foxapplication.simplerpc.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

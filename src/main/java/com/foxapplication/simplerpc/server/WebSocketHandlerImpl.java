@@ -1,6 +1,5 @@
-package com.foxapplication.simplerpc;
+package com.foxapplication.simplerpc.server;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.hutool.core.text.StrUtil;
 import org.smartboot.http.common.codec.websocket.CloseReason;

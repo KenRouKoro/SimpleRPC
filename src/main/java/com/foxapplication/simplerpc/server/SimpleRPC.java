@@ -1,5 +1,7 @@
-package com.foxapplication.simplerpc;
+package com.foxapplication.simplerpc.server;
 
+import com.foxapplication.simplerpc.common.APIResponse;
+import com.foxapplication.simplerpc.common.HttpResponseUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,9 @@
-package com.foxapplication.simplerpc;
+package com.foxapplication.simplerpc.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.foxapplication.simplerpc.common.APIResponse;
+import com.foxapplication.simplerpc.common.RPCRouterNode;
+import com.foxapplication.simplerpc.common.TimedCache;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +44,7 @@ public class RPCRouter {
     /**
      *  根路由节点
      */
-    private final RPCRouterNode root = new RPCRouterNode();
+    private final RPCRouterNode<RPCServer> root = new RPCRouterNode<>();
 
     /**
      * 构造函数，初始化RPC路由器
@@ -129,7 +132,7 @@ public class RPCRouter {
             return;
         }
         List<String> link = SplitUtil.split(data.getKey(),".",true,false);
-        RPCRouterNode cacheNode = root;
+        RPCRouterNode<RPCServer> cacheNode = root;
         for (String s : link) {
             cacheNode = cacheNode.getChildren().get(s);
             if (cacheNode == null){
@@ -151,7 +154,7 @@ public class RPCRouter {
      * @param data API响应数据
      * @param root RPC路由树的根节点
      */
-    private void executeCallback(WebSocketRequest request, WebSocketResponse response, APIResponse data, RPCRouterNode root) {
+    private void executeCallback(WebSocketRequest request, WebSocketResponse response, APIResponse data, RPCRouterNode<RPCServer> root) {
         executorService.execute(() -> {
             Optional<APIResponse> result = root.getRpcServer().handle(request, response, data);
             result.ifPresent(apiResponse -> {
@@ -180,11 +183,34 @@ public class RPCRouter {
             return;
         }
         List<String> link = SplitUtil.split(key, ".", true, false);
-        RPCRouterNode cacheNode = root;
+        RPCRouterNode<RPCServer> cacheNode = root;
         for (String s : link) {
             cacheNode = cacheNode.getChildren().computeIfAbsent(s, k -> RPCRouterNode.create(s));
         }
         cacheNode.setRpcServer(rpcServer);
+    }
+    public void removeRouterNode(String key) {
+        if (StrUtil.isBlank(key)) {
+            log.error("Cannot remove root");
+            return;
+        }
+        List<String> link = SplitUtil.split(key, ".", true, false);
+        RPCRouterNode<RPCServer> cacheNode = root;
+        RPCRouterNode<RPCServer> lastNode = null;
+        String findKey = null;
+        for (String s : link) {
+            lastNode = cacheNode;
+            findKey = s;
+            cacheNode = cacheNode.getChildren().get(s);
+            if (cacheNode == null){
+                return;
+            }
+        }
+        if (lastNode == null || findKey == null){
+            return;
+        }
+        lastNode.getChildren().remove(findKey);
+
     }
 
     /**
@@ -193,8 +219,25 @@ public class RPCRouter {
      * @param uuid 回调的唯一标识符
      * @param rpcServer 回调的RPC服务器实例
      */
-    public void addSandCallBack(String uuid, RPCServer rpcServer) {
+    public void addSendCallBack(String uuid, RPCServer rpcServer) {
         taskCache.put(uuid, rpcServer);
+    }
+
+    public void send(WebSocketResponse response, APIResponse data){
+        send(response, data, simpleRPC.isBinaryFirst());
+    }
+
+    public void send(WebSocketResponse response, APIResponse data,boolean bin){
+        if (bin) {
+            try {
+                response.sendBinaryMessage(data.toBin());
+            } catch (JsonProcessingException e) {
+                log.error("Data conversion failed.", e);
+                taskCache.remove(data.getUUID());
+            }
+        } else {
+            response.sendTextMessage(data.toString());
+        }
     }
 
     /**
@@ -206,16 +249,11 @@ public class RPCRouter {
      * @param rpcServer 相关的RPC服务器实例
      */
     public void sendAndCallBack(WebSocketResponse response, APIResponse data, boolean isBinary, RPCServer rpcServer) {
-        addSandCallBack(data.getUUID(), rpcServer);
-        if (isBinary) {
-            try {
-                response.sendBinaryMessage(data.toBin());
-            } catch (JsonProcessingException e) {
-                log.error("Data conversion failed.", e);
-                taskCache.remove(data.getUUID());
-            }
-        } else {
-            response.sendTextMessage(data.toString());
-        }
+        addSendCallBack(data.getUUID(), rpcServer);
+        send(response, data, isBinary);
+    }
+    public void sendAndCallBack(WebSocketResponse response, APIResponse data, RPCServer rpcServer) {
+        addSendCallBack(data.getUUID(), rpcServer);
+        send(response, data);
     }
 }

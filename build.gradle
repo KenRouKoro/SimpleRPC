@@ -15,6 +15,10 @@ dependencies {
 
     implementation 'io.github.smartboot.http:smart-http-server:1.6.0'
     implementation 'org.dromara.hutool:hutool-all:6.0.0-M16'
+
+    // https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket
+    implementation 'org.java-websocket:Java-WebSocket:1.5.7'
+
     /**
      * Log 系统
     **/

@@ -1,5 +1,6 @@
-package com.foxapplication.simplerpc;
+package com.foxapplication.simplerpc.server;
 
+import com.foxapplication.simplerpc.common.APIResponse;
 import org.smartboot.http.server.WebSocketRequest;
 import org.smartboot.http.server.WebSocketResponse;
 

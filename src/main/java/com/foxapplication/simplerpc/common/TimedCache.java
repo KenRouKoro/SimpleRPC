@@ -1,4 +1,4 @@
-package com.foxapplication.simplerpc;
+package com.foxapplication.simplerpc.common;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
